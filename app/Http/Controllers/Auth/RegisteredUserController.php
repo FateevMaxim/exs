@@ -21,7 +21,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        $config = Configuration::query()->select('whats_app')->first();
+        $config = Configuration::query()->select('agreement', 'whats_app')->first();
         return view('auth.register')->with(compact( 'config'));
     }
 
