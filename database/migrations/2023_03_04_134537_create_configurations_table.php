@@ -16,9 +16,11 @@ return new class extends Migration
             $table->string('tag');
             $table->string('title_text');
             $table->string('title_text_two')->nullable();
+            $table->text('agreement')->nullable();
             $table->string('address')->nullable();
             $table->string('address_two')->nullable();
             $table->string('address_three')->nullable();
+            $table->string('whats_app')->nullable();
             $table->string('whats_app')->nullable();
             $table->boolean('whats_app_message')->default(false);
             $table->timestamps();
