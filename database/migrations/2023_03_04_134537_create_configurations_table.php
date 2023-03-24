@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('address_two')->nullable();
             $table->string('address_three')->nullable();
             $table->string('whats_app')->nullable();
-            $table->string('whats_app')->nullable();
             $table->boolean('whats_app_message')->default(false);
             $table->timestamps();
         });
