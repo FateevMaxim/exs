@@ -39,13 +39,6 @@
             <x-text-input id="city" class="block mt-1 w-full border-2" type="text" name="city" :value="old('city')" placeholder="Gorod" required autocomplete="city" />
             <x-input-error :messages="$errors->get('city')" class="mt-2" />
         </div>
-
-        <!-- Code -->
-        <div class="mt-4">
-            <x-input-label for="code" :value="__('Код')" />
-            <x-text-input id="code" class="block mt-1 w-full border-2" type="text" name="code" :value="old('code')" placeholder="Код" required autocomplete="code" />
-            <x-input-error :messages="$errors->get('code')" class="mt-2" />
-        </div>
         @if(isset($config->whats_app))
             <div class="flex items-center justify-end mt-4">
                 <a href="https://api.whatsapp.com/send?phone={{$config->whats_app}}&text=Здравствуйте! Дайте мне, пожалуйста, код для регистрации" class="w-full mx-auto">
