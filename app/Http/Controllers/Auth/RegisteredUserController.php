@@ -46,9 +46,9 @@ class RegisteredUserController extends Controller
             return redirect()->back()->with('error', 'Неверный номер, пожалуйста, перепроверьте');
         }
 
-        $code = strlen(explode('-', $request->code)[1]);
+        $code = strlen($request->code);
 
-        if (!Str::contains($request->code, '001-') || $code > 4 ){
+        if (!is_numeric($request->code) || $code > 4 ){
             return redirect()->back()->with('error', 'Неверный код, пожалуйста, перепроверьте');
         }
 
