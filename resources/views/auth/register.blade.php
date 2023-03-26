@@ -43,7 +43,7 @@
         <!-- Code -->
         <div class="mt-4">
             <x-input-label for="code" :value="__('Код')" />
-            <x-text-input id="code" class="block mt-1 w-full border-2 border-sky-400" type="text" name="code" :value="old('code')" placeholder="Код" required autocomplete="code" />
+            <x-text-input id="code" class="block mt-1 w-full border-2" type="text" name="code" :value="old('code')" placeholder="Код" required autocomplete="code" />
             <x-input-error :messages="$errors->get('code')" class="mt-2" />
         </div>
         @if(isset($config->whats_app))
