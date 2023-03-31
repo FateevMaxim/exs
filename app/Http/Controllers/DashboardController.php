@@ -32,7 +32,7 @@ class DashboardController extends Controller
             return view('dashboard')->with(compact('tracks', 'count', 'messages', 'config'));
         }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'stock'){
             $config = Configuration::query()->select('address')->first();
-            $count = TrackList::query()->whereDate('created_at', Carbon::today())->count();
+            $count = TrackList::query()->whereDate('to_china', Carbon::today())->count();
             return view('stock')->with(compact('count', 'config'));
         }elseif (Auth::user()->is_active === 1 && Auth::user()->type === 'almatyin'){
             $config = Configuration::query()->select('address')->first();
