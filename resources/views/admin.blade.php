@@ -190,12 +190,12 @@
                                             @if($user->is_active == true) {{ __('Заблокировать') }} @else {{ __('Дать доступ') }} @endif
                                         </x-classic-button>
                                     </form>
-                                    <x-secondary-button data-modal-target="editModal" data-modal-toggle="editModal" class="grid items-center w-full mt-4">
+                                    <x-secondary-button data-modal-target="editModal{{$user->id}}" data-modal-toggle="editModal{{$user->id}}" class="grid items-center w-full mt-4">
                                         Редактировать
                                     </x-secondary-button>
 
                                     <!-- Main modal -->
-                                    <div id="editModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+                                    <div id="editModal{{$user->id}}" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
                                         <div class="relative w-3/4 max-w-md md:h-auto">
                                             <!-- Modal content -->
                                             <div class="relative bg-white rounded-lg shadow">
@@ -222,8 +222,8 @@
                                                     <input type="hidden" name="userId" value="{{$user->id}}" />
                                                     <!-- Modal footer -->
                                                     <div class="grid grid-cols-2 items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
-                                                        <button data-modal-hide="editModal" type="submit" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">Да</button>
-                                                        <button data-modal-hide="editModal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">Отмена</button>
+                                                        <button data-modal-hide="editModal{{$user->id}}" type="submit" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">Да</button>
+                                                        <button data-modal-hide="editModal{{$user->id}}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">Отмена</button>
                                                     </div>
                                                 </form>
                                             </div>
