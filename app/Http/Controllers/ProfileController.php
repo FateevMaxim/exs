@@ -79,7 +79,7 @@ class ProfileController extends Controller
         $users = User::query()->where('login', 'LIKE', '%'.$request->phone.'%')->get();
         $messages = Message::all();
         $search_phrase = $request->phone;
-        $config = Configuration::query()->select('address')->first();
+        $config = Configuration::query()->select('address', 'title_text', 'address_two')->first();
         return view('admin')->with(compact('users', 'messages', 'search_phrase', 'config'));
     }
 
