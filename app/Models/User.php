@@ -36,4 +36,9 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function clientTrackLists()
+    {
+        return $this->hasMany(ClientTrackList::class, 'user_id');
+    }
 }
