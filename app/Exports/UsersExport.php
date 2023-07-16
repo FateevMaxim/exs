@@ -67,7 +67,6 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
             '#',
             'Трек код',
             'Статус',
-            'Город',
             'Имя',
             'Телефон',
         ];
