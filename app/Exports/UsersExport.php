@@ -30,11 +30,11 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
     public function collection()
     {
         $query = TrackList::query()
-            ->select('id', 'track_code', 'status');
+            ->select('id', 'track_code', 'status', 'to_client');
         if ($this->date != null){
             $query->whereDate('to_client', $this->date);
         }
-        $query->where('status', 'LIKE', 'Отправлено в Ваш город');
+        $query->where('status', 'LIKE', 'Отправлено в Ваш город')->orderBy('to_client');
 
         $data = $query->with('user')->get();
 
@@ -48,9 +48,9 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
     public function map($data): array
     {
         return [
-            $data->id,
             $data->track_code,
             $data->status,
+            $data->to_client,
             $data->user->name ?? '',
             $data->user->login ?? '',
         ];
@@ -64,9 +64,9 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
     public function headings(): array
     {
         return [
-            '#',
             'Трек код',
             'Статус',
+            'Дата',
             'Имя',
             'Телефон',
         ];
