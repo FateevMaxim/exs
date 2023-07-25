@@ -34,7 +34,7 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
         if ($this->date != null){
             $query->whereDate('to_client', $this->date);
         }
-        $query->where('status', 'LIKE', 'Отправлено в Ваш город')->orderBy('to_client');
+        $query->orderBy('to_client');
 
         $data = $query->with('user')->get();
 
