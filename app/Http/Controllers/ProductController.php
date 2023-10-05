@@ -190,49 +190,55 @@ class ProductController extends Controller
     }
     public function result ()
     {
+        $endDate = now();
+        $startDate = $endDate->copy()->subMonths(2);
 
-        $chinaTracks = TrackList::select('id', 'to_china', DB::raw("DATE_FORMAT(to_china, '%m') as month_name"))
+        $chinaTracks = TrackList::select('id', 'to_china', DB::raw("DATE_FORMAT(to_china, '%b') as month_name"))
             ->whereYear('to_china', date('Y'))
+            ->whereBetween('to_china', [$startDate, $endDate])
             ->groupBy('to_china')
             ->pluck('id', 'month_name');
-
-        $almatyTracks = TrackList::select('id', 'to_almaty', DB::raw("DATE_FORMAT(to_almaty, '%m') as month_name"))
+        $almatyTracks = TrackList::select('id', 'to_almaty', DB::raw("DATE_FORMAT(to_almaty, '%b') as month_name"))
             ->whereYear('to_almaty', date('Y'))
+            ->whereBetween('to_china', [$startDate, $endDate])
             ->groupBy('to_almaty')
             ->pluck('id', 'month_name');
-        $clientTracks = TrackList::select('id', 'to_client', DB::raw("DATE_FORMAT(to_client, '%m') as month_name"))
+        $clientTracks = TrackList::select('id', 'to_client', DB::raw("DATE_FORMAT(to_client, '%b') as month_name"))
             ->whereYear('to_client', date('Y'))
+            ->whereBetween('to_china', [$startDate, $endDate])
             ->groupBy('to_client')
             ->pluck('id', 'month_name');
-
-        $datesTracks = ($chinaTracks)->merge($almatyTracks)->merge($clientTracks)->sortKeys();
-
+        $datesTracks = ($chinaTracks)->merge($almatyTracks)->merge($clientTracks);
         $datesTracks = $datesTracks->toArray();
+
         $labels = array_keys($datesTracks);
+        $labels = array_slice($labels, -3);
+
 
         $data = [];
         $data2 = [];
         $data3 = [];
 
         foreach ($labels as $dateT) {
-            $data[] = TrackList::query()->where('to_china', 'LIKE', '%-'.$dateT.'-%')->count();
-            $data2[] = TrackList::query()->where('to_almaty', 'LIKE', '%-'.$dateT.'-%')->count();
-            $data3[] = TrackList::query()->where('to_client', 'LIKE', '%-'.$dateT.'-%')->count();
+            $data[] = TrackList::query()->where('to_china', 'LIKE', '%-'.str_pad(date_parse($dateT)['month'], 2, '0', STR_PAD_LEFT).'-%')->count();
+            $data2[] = TrackList::query()->where('to_almaty', 'LIKE', '%-'.str_pad(date_parse($dateT)['month'], 2, '0', STR_PAD_LEFT).'-%')->count();
+            $data3[] = TrackList::query()->where('to_client', 'LIKE', '%-'.str_pad(date_parse($dateT)['month'], 2, '0', STR_PAD_LEFT).'-%')->count();
+
         }
 
         $arr = [
-            '01' => 'Янв.',
-            '02' => 'Фев.',
-            '03' => 'Март',
-            '04' => 'Апр.',
-            '05' => 'Май',
-            '06' => 'Июнь',
-            '07' => 'Июль',
-            '08' => 'Авг.',
-            '09' => 'Сен.',
-            '10.' => 'Окт.',
-            '11.' => 'Ноя.',
-            '12' => 'Дек.'
+            'Jan' => 'Янв.',
+            'Feb' => 'Фев.',
+            'Mar' => 'Март',
+            'Apr' => 'Апр.',
+            'May' => 'Май',
+            'Jun' => 'Июнь',
+            'Jul' => 'Июль',
+            'Aug' => 'Авг.',
+            'Sep' => 'Сен.',
+            'Oct' => 'Окт.',
+            'Nov' => 'Ноя.',
+            'Dec' => 'Дек.'
         ];
         $labels = array_map(function($v) use($arr) {
             return $arr[$v] ?? $v;
@@ -242,46 +248,42 @@ class ProductController extends Controller
         $data2 = collect($data2);
         $data3 = collect($data3);
 
-        $nowMonth = Carbon::now()->format('m');
+        $now = Carbon::now()->format('Y-m-d');
+        $targetDay = Carbon::now()->subDays(9)->format('Y-m-d');
 
-        $chinaTracksDays = TrackList::select('id', 'to_china', DB::raw("DATE(to_china) as date"))
-            ->whereMonth('to_china', $nowMonth)
-            ->groupBy('to_china')
-            ->orderBy('id', 'desc')
-            ->pluck('id', 'date');
-        $almatyTracksDays = TrackList::select('id', 'to_almaty', DB::raw("DATE(to_almaty) as date"))
-            ->whereMonth('to_almaty', $nowMonth)
-            ->groupBy('to_almaty')
-            ->orderBy('id', 'desc')
-            ->pluck('id', 'date');
-        $clientTracksDays = TrackList::select('id', 'to_client', DB::raw("DATE(to_client) as date"))
-            ->whereMonth('to_client', $nowMonth)
-            ->groupBy('to_client')
-            ->orderBy('id', 'desc')
-            ->pluck('id', 'date');
-
-        $dates = $chinaTracksDays->merge($almatyTracksDays)->merge($clientTracksDays)->sortKeysDesc()->toArray();
-
-        $labelsDays = array_slice(array_flip($dates), 0, 10);
-        foreach ($labelsDays as $labelsDay => $value) {
-            $labelsDays[$labelsDay] = Carbon::parse($value)->format('m-d');
+        while ($now > $targetDay) {
+            $labelsDays[] = Carbon::parse($now)->format('Y-m-d');
+            $now = Carbon::parse($now)->sub(1, 'day');
         }
 
         $dataDays = [];
         $dataDays2 = [];
         $dataDays3 = [];
         $i = 0;
+        $monthes = array(
+            1 => 'Января', 2 => 'Февраля', 3 => 'Марта', 4 => 'Апреля',
+            5 => 'Мая', 6 => 'Июня', 7 => 'Июля', 8 => 'Августа',
+            9 => 'Сентября', 10 => 'Октября', 11 => 'Ноября', 12 => 'Декабря'
+        );
+        $days = array(
+            'Воскресенье', 'Понедельник', 'Вторник', 'Среда',
+            'Четверг', 'Пятница', 'Суббота'
+        );
+        foreach ($labelsDays as $date) {
 
-        foreach ($dates as $date => $value) {
             $dataDays[$i] = TrackList::query()->where('to_china', 'LIKE', $date . '%')->count();
             $dataDays2[$i] = TrackList::query()->where('to_almaty', 'LIKE', $date . '%')->count();
             $dataDays3[$i] = TrackList::query()->where('to_client', 'LIKE', $date . '%')->count();
+
+
+            $labelsDays[$i] = date('j', strtotime($date)).' '.$monthes[(date('n', strtotime($date)))]. " \r\n".$days[(date('w', strtotime($date)))];
             $i++;
+
         }
 
-        $dataDays = collect($dataDays)->take(10);
-        $dataDays2 = collect($dataDays2)->take(10);
-        $dataDays3 = collect($dataDays3)->take(10);
+        $dataDays = collect($dataDays);
+        $dataDays2 = collect($dataDays2);
+        $dataDays3 = collect($dataDays3);
 
         $clients = User::query()->where('type', null)->count();
         $clients_today = User::query()->where('type', null)->whereDate('created_at',  Carbon::today())->count();
@@ -289,11 +291,9 @@ class ProductController extends Controller
         $clients_true = User::query()->where('type', null)->where('is_active', true)->count();
         $clients_auth = User::query()->where('type', null)->whereDate('login_date', Carbon::today())->count();
 
-
-        $tracks_today = ClientTrackList::query()->whereDay('created_at', Carbon::now()->day)->count();
-        $tracks_month = ClientTrackList::query()->whereMonth('created_at', Carbon::now()->month)->count();
+        $tracks_today = ClientTrackList::query()->whereDate('created_at', Carbon::today())->count();
+        $tracks_month = ClientTrackList::query()->where('created_at', 'LIKE', Carbon::now()->format('Y-m').'%')->count();
         $tracks_total = ClientTrackList::query()->count();
-
         $config = Configuration::query()->select('address', 'title_text')->first();
         return view('result', compact('labels', 'data', 'data2', 'data3', 'clients', 'clients_today',
             'clients_false', 'clients_true', 'clients_auth', 'tracks_today', 'tracks_month', 'tracks_total', 'labelsDays',
