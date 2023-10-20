@@ -41,17 +41,31 @@ class ProductController extends Controller
 
         $array =  preg_split("/\s+/", $request["track_codes"]);
         $wordsFromFile = [];
+        $city = null;
+
+        if (Auth::user()->type === 'atyrauin'){
+            $city_field = 'to_city';
+            $city_value = 'Получено на складе в Атырау';
+            $city = 'Атырау';
+            $reg_field = 'reg_city';
+        }elseif (Auth::user()->type === 'almatyin'){
+            $city_field = 'to_almaty';
+            $city_value = 'Получено на складе в Алматы';
+            $reg_field = 'reg_almaty';
+        }
+
         foreach ($array as $ar){
             $wordsFromFile[] = [
                 'track_code' => $ar,
-                'to_almaty' => date(now()),
-                'status' => 'Получено на складе в Алматы',
-                'reg_almaty' => 1,
+                $city_field => date(now()),
+                'status' => $city_value,
+                $reg_field => 1,
+                'city' => $city,
                 'updated_at' => date(now()),
             ];
         }
-        TrackList::upsert($wordsFromFile, ['track_code', 'to_almaty', 'status', 'reg_almaty', 'updated_at']);
-        return redirect()->back()->with('message', 'Трек код успешно добавлен');
+        TrackList::upsert($wordsFromFile, ['track_code', $city_field, 'status', $reg_field, 'updated_at']);
+        return redirect()->back()->with('message', 'Трек коды успешно добавлены');
 
     }
 
@@ -70,23 +84,36 @@ class ProductController extends Controller
 
     public function almatyOut(Request $request)
     {
+        if($request["city"] != 'Выберите город' && isset($request["city"])){
+            $city = $request["city"];
+        }else{
+            $city = null;
+        }
+
+        if($request["to_city"] != null) {
+            $city = $request["to_city"];
+        }
         $status = "Выдано клиенту";
         if ($request["send"] === 'true'){
             $status = "Отправлено в Ваш город";
         }
         $array =  preg_split("/\s+/", $request["track_codes"]);
-
+        $client_field = 'to_client';
+        if (Auth::user()->type != 'othercity' && Auth::user()->type != 'almatyout'){
+            $client_field = 'to_client_city';
+        }
         $wordsFromFile = [];
         foreach ($array as $ar){
             $wordsFromFile[] = [
                 'track_code' => $ar,
-                'to_client' => date(now()),
+                $client_field => date(now()),
                 'status' => $status,
                 'reg_client' => 1,
+                'city' => $city,
                 'updated_at' => date(now()),
             ];
         }
-        TrackList::upsert($wordsFromFile, ['track_code', 'to_client', 'status', 'reg_client', 'updated_at']);
+        TrackList::upsert($wordsFromFile, ['track_code', $client_field, 'status', 'city', 'reg_client', 'updated_at']);
         return response('success');
 
     }
@@ -94,7 +121,7 @@ class ProductController extends Controller
     {
 
         $track_code = ClientTrackList::query()->select('user_id')->where('track_code', $request['track_code'])->first();
-        $track_code_statuses =  TrackList::query()->select('to_china', 'to_almaty', 'to_client', 'client_accept')->where('track_code', $request['track_code'])->first();
+        $track_code_statuses =  TrackList::query()->select('to_china', 'to_almaty', 'city', 'to_client', 'client_accept', 'to_city', 'to_client_city')->where('track_code', $request['track_code'])->first();
         if ($track_code){
             $user_data = User::query()->select('name', 'surname', 'login', 'city', 'block', 'branch', 'is_post')->where('id', $track_code->user_id)->first();
         }else{

@@ -12,11 +12,11 @@
                     </div>
                 @endif
 
-                <div class="grid grid-cols-1 max-w-3xl mx-auto md:grid-cols-2 h-22 pl-6 pr-6 pb-4">
+                    <div class="grid grid-cols-1 max-w-3xl mx-auto md:grid-cols-2 h-22 pl-6 pr-6 pb-4">
 
                         <div class="min_height round_border p-4 relative">
                             <div>
-                                <h3 class="mt-0 p-4 text-2xl font-medium leading-tight text-primary">Пункт выдачи Алматы</h3>
+                                <h3 class="mt-0 p-4 text-2xl font-medium leading-tight text-primary">Пункт выдачи в {{ $cityin }}</h3>
                             </div>
                             <form method="POST" action="{{ route('getinfo-product') }}" id="getInfoForm">
                                 <div class="w-full">
@@ -37,21 +37,30 @@
                                     <h4 class="mt-0 text-xl font-medium leading-tight text-primary">Данные клиента</h4>
                                     <h5 id="block" class="mt-0 text text-red-400 font-medium leading-tight text-primary" style="display: none;">Клиент находится в чёрном списке</h5>
                                     <h5 id="unknown" class="mt-0 text text-red-400 font-medium leading-tight text-primary" style="display: none;">Неопознанный трек код</h5>
-                                    <h5 id="post" class="mt-0 text text-green-400 font-medium leading-tight text-primary" style="display: none;">Клиент получает по почте</h5>
 
                                     <p><b>Имя:</b> <span id="surnamename"></span> &nbsp; <span id="name"></span></p>
                                     <p><b>Номер телефона:</b> <span id="login"></span></p>
                                     <p><b>Город:</b> <span id="city"></span></p>
+                                    <p><b>Филиал:</b> <span id="branch"></span></p>
 
                                     <p><b>Трек код:</b> <span id="trackcode"></span></p>
-                                    <p><b>Филиал:</b> <span id="branch"></span></p>
 
                                     <h4 class="mt-4">Дата регистрации в Китае</h4>
                                     <p><small id="to_china"></small></p>
                                     <h4>Дата регистрации в Алматы</h4>
                                     <p><small id="to_almaty"></small></p>
+                                    <div id="filial_one">
+                                        <h4>Отправлено в город <span id="city_name"></span></h4>
+                                        <p><small id="to_othercity"></small></p>
+                                    </div>
+                                    <div id="filial_two">
+                                        <h4>Получено в городе <span id="city_name_two"></span></h4>
+                                        <p><small id="to_city"></small></p>
+                                    </div>
+
                                     <h4>Дата выдачи клиенту</h4>
                                     <p><small id="to_client"></small></p>
+                                    <p><small id="to_client_city"></small></p>
                                     <h4>Дата получения клиентом</h4>
                                     <p><small id="client_accept"></small></p>
                                 </div>
@@ -73,85 +82,96 @@
                             </div>
 
                         </div>
-                        <script>
+                    <script>
 
-                            /* прикрепить событие submit к форме */
-                            $("#getInfoForm").submit(function(event) {
-                                /* отключение стандартной отправки формы */
-                                event.preventDefault();
+                        /* прикрепить событие submit к форме */
+                        $("#getInfoForm").submit(function(event) {
+                            /* отключение стандартной отправки формы */
+                            event.preventDefault();
 
-                                /* собираем данные с элементов страницы: */
-                                var $form = $( this ),
-                                    track_code = $("#track_code").val();
-                                    url = $form.attr( 'action' );
+                            /* собираем данные с элементов страницы: */
+                            var $form = $( this ),
+                                track_code = $("#track_code").val();
+                            url = $form.attr( 'action' );
 
-                                /* отправляем данные методом POST */
-                                $.post( url, { track_code: track_code } )
-                                 .done(function( data ) {
-                                     $("#surname").text(data[1].surname);
-                                     $("#name").text(data[1].name);
-                                     $("#login").text(data[1].login);
-                                     $("#branch").text(data[1].branch);
-                                     $("#city").text(data[1].city);
-                                     $("#to_china").text(data[0].to_china);
-                                     $("#trackcode").text(track_code);
-                                     $("#to_almaty").text(data[0].to_almaty);
-                                     $("#to_client").text(data[0].to_client);
-                                     $("#client_accept").text(data[0].client_accept);
+                            /* отправляем данные методом POST */
+                            $.post( url, { track_code: track_code } )
+                                .done(function( data ) {
+                                    $("#surname").text(data[1].surname);
+                                    $("#name").text(data[1].name);
+                                    $("#login").text(data[1].login);
+                                    $("#city").text(data[1].city);
+                                    $("#branch").text(data[1].branch);
+                                    $("#to_china").text(data[0].to_china);
+                                    $("#trackcode").text(track_code);
+                                    $("#to_almaty").text(data[0].to_almaty);
+                                    $("#to_city").text(data[0].to_city);
+                                    $("#to_client_city").text(data[0].to_client_city);
+                                    $("#city_name").text(data[0].city);
+                                    $("#city_name_two").text(data[0].city);
 
-                                     if (data[1].is_post == true){
-                                         $("#post").css("display","block");
-                                     }else{
-                                         $("#post").css("display","none");
-                                     }
+                                    var city_name = data[0].city;
 
-                                     if (data[1].block === 'нет'){
-                                         $("#unknown").css("display","block");
-                                     }else if(data[1].block != null){
-                                         $("#block").css("display","block");
-                                     }else{
-                                         $("#block").css("display","none");
-                                         $("#unknown").css("display","none");
-                                     }
+                                    if(city_name){
+                                        $("#to_othercity").text(data[0].to_client);
+                                        //$("#to_client").text(data[0].to_client);
+                                    }else{
 
-                                 });
-                            });
+                                        $("#filial_one").css("display", "none");
+                                        $("#filial_two").css("display", "none");
+                                        $("#to_client").text(data[0].to_client);
+                                    }
 
-                            /* прикрепить событие submit к форме */
-                            $("#almatyOut").submit(function(event) {
-                                /* отключение стандартной отправки формы */
-                                event.preventDefault();
+                                    $("#client_accept").text(data[0].client_accept);
 
-                                /* собираем данные с элементов страницы: */
-                                var $form = $( this ),
-                                    track_codes = $("#trackcode").text();
-                                    url = $form.attr( 'action' );
+                                    if (data[1].block === 'нет'){
+                                        $("#unknown").css("display","block");
+                                    }else if(data[1].block != null){
+                                        $("#block").css("display","block");
+                                    }else{
+                                        $("#block").css("display","none");
+                                        $("#unknown").css("display","none");
+                                    }
 
-                                /* отправляем данные методом POST */
-                                $.post( url, { track_codes: track_codes } )
-                                 .done(function( data ) {
-                                     location.reload();
-                                 });
+                                });
+                        });
 
-                            });
+                        /* прикрепить событие submit к форме */
+                        $("#almatyOut").submit(function(event) {
+                            /* отключение стандартной отправки формы */
+                            event.preventDefault();
 
-                            /* прикрепить событие submit к форме */
-                            $("#clear").click(function(event) {
-                                /* отключение стандартной отправки формы */
-                                event.preventDefault();
+                            /* собираем данные с элементов страницы: */
+                            var $form = $( this ),
+                                track_codes = $("#trackcode").text();
+                            to_city = $("#city_name").text();
+                            url = $form.attr( 'action' );
 
-                                    track_codes = $("#trackcode").text();
-                                url = 'almatyout-product';
+                            /* отправляем данные методом POST */
+                            $.post( url, { track_codes: track_codes, to_city: to_city } )
+                                .done(function( data ) {
+                                    location.reload();
+                                });
 
-                                /* отправляем данные методом POST */
-                                $.post( url, { track_codes: track_codes, send: true } )
-                                    .done(function( data ) {
-                                        location.reload();
-                                    });
+                        });
 
-                            });
+                        /* прикрепить событие submit к форме */
+                        $("#clear").click(function(event) {
+                            /* отключение стандартной отправки формы */
+                            event.preventDefault();
 
-                        </script>
+                            track_codes = $("#trackcode").text();
+                            url = 'almatyout-product';
+
+                            /* отправляем данные методом POST */
+                            $.post( url, { track_codes: track_codes, send: true } )
+                                .done(function( data ) {
+                                    location.reload();
+                                });
+
+                        });
+
+                    </script>
                 </div>
 
                     @include('components.scanner-settings')
