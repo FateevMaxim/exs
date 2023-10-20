@@ -40,7 +40,7 @@
             <x-input-error :messages="$errors->get('city')" class="mt-2" />
         </div>
         <!-- Branch -->
-        <label for="branch" class="block mb-2 text-sm font-medium text-gray-900">Филиал</label>
+        <label for="branch" class="block mt-4 mb-2 text-sm font-medium text-gray-900">Филиал</label>
         <select id="branch" name="branch" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
             @foreach($branches as $branch)
                 <option value="{{ $branch->title }}">{{ $branch->title }}</option>
