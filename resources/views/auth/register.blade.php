@@ -42,8 +42,10 @@
         <!-- Branch -->
         <label for="branch" class="block mb-2 text-sm font-medium text-gray-900">Филиал</label>
         <select id="branch" name="branch" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-            <option value="Алматы" selected>Алматы</option>
-            <option value="ADEMI">ADEMI</option>
+            @foreach($branches as $branch)
+                <option value="{{ $branch->title }}">{{ $branch->title }}</option>
+            @endforeach
+
         </select>
        {{-- @if(isset($config->whats_app))
             <div class="flex items-center justify-end mt-4">

@@ -23,8 +23,8 @@ class RegisteredUserController extends Controller
     public function create(): View
     {
         $config = Configuration::query()->select('agreement', 'whats_app')->first();
-        $braches = Branch::all();
-        return view('auth.register')->with(compact( 'config', 'braches'));
+        $branches = Branch::all();
+        return view('auth.register')->with(compact( 'config', 'branches'));
     }
 
     /**
