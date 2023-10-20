@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'code',
         'is_post',
+        'branch'
     ];
 
     /**

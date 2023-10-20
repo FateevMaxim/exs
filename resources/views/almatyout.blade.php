@@ -44,7 +44,7 @@
                                     <p><b>Город:</b> <span id="city"></span></p>
 
                                     <p><b>Трек код:</b> <span id="trackcode"></span></p>
-                                    <p><b>Код:</b> <span id="code"></span></p>
+                                    <p><b>Филиал:</b> <span id="branch"></span></p>
 
                                     <h4 class="mt-4">Дата регистрации в Китае</h4>
                                     <p><small id="to_china"></small></p>
@@ -91,7 +91,7 @@
                                      $("#surname").text(data[1].surname);
                                      $("#name").text(data[1].name);
                                      $("#login").text(data[1].login);
-                                     $("#code").text(data[1].code);
+                                     $("#branch").text(data[1].branch);
                                      $("#city").text(data[1].city);
                                      $("#to_china").text(data[0].to_china);
                                      $("#trackcode").text(track_code);

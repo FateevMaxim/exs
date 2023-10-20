@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Configuration;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
@@ -22,7 +23,8 @@ class RegisteredUserController extends Controller
     public function create(): View
     {
         $config = Configuration::query()->select('agreement', 'whats_app')->first();
-        return view('auth.register')->with(compact( 'config'));
+        $braches = Branch::all();
+        return view('auth.register')->with(compact( 'config', 'braches'));
     }
 
     /**
@@ -37,6 +39,7 @@ class RegisteredUserController extends Controller
             'checkbox' => ['required'],
             'surname' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
+            'branch' => ['required', 'string', 'max:255'],
             'login' => ['required', 'string', 'max:16', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -51,6 +54,7 @@ class RegisteredUserController extends Controller
             'city' => $request->city,
             'login' => $request->login,
             'password' => $request->password,
+            'branch' => $request->branch,
         ]);
 
         event(new Registered($user));
