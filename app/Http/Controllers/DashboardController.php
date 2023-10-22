@@ -54,7 +54,7 @@ class DashboardController extends Controller
             $messages = Message::all();
             $config = Configuration::query()->select('address')->first();
             $search_phrase = '';
-            $users = User::query()->select('id', 'name', 'surname', 'type', 'login', 'city', 'is_active', 'block', 'password', 'created_at')->where('type', null)->where('is_active', false)->get();
+            $users = User::query()->select('id', 'name', 'surname', 'type', 'login', 'city', 'is_active', 'block', 'password', 'created_at', 'branch')->where('type', null)->where('is_active', false)->get();
             return view('admin')->with(compact('users', 'messages', 'search_phrase', 'config'));
         }
         return view('register-me')->with(compact( 'config'));
