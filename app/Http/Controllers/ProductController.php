@@ -247,9 +247,9 @@ class ProductController extends Controller
         $data3 = [];
 
         foreach ($labels as $dateT) {
-            $data[] = TrackList::query()->where('to_china', 'LIKE', '%-'.str_pad(date_parse($dateT)['month'], 2, '0', STR_PAD_LEFT).'-%')->count();
-            $data2[] = TrackList::query()->where('to_almaty', 'LIKE', '%-'.str_pad(date_parse($dateT)['month'], 2, '0', STR_PAD_LEFT).'-%')->count();
-            $data3[] = TrackList::query()->where('to_client', 'LIKE', '%-'.str_pad(date_parse($dateT)['month'], 2, '0', STR_PAD_LEFT).'-%')->count();
+            $data[] = TrackList::query()->where('to_china', 'LIKE', date('Y').'-'.str_pad(date_parse($dateT)['month'], 2, '0', STR_PAD_LEFT).'-%')->count();
+            $data2[] = TrackList::query()->where('to_almaty', 'LIKE', date('Y').'-'.str_pad(date_parse($dateT)['month'], 2, '0', STR_PAD_LEFT).'-%')->count();
+            $data3[] = TrackList::query()->where('to_client', 'LIKE', date('Y').'-'.str_pad(date_parse($dateT)['month'], 2, '0', STR_PAD_LEFT).'-%')->count();
 
         }
 
