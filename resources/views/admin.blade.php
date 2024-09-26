@@ -7,6 +7,7 @@
             <div class="w-full h-22 pl-4 pr-4 pb-4">
                 <div class="grid h-full grid-cols-3 mx-auto circleBaseTwo circle2">
                     <button type="button" class="inline-flex flex-col items-center justify-center px-5">
+                        <a href="{{ route('export-active-users') }}" class="text-sm text-white leading-8">Экспорт активных пользователей</a>
                     </button>
                     <div class="mx-auto">
                         <button data-modal-target="popup-modal" data-modal-toggle="popup-modal" type="button" class="inline-flex flex-col items-center justify-center px-5">
