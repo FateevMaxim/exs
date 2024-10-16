@@ -2,8 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\ClientTrackList;
-use App\Models\TrackList;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -11,10 +10,9 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class ActiveUsersExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithColumnFormatting
+class AllUsersExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithColumnFormatting
 {
     use Importable;
     public function __construct()
@@ -25,16 +23,17 @@ class ActiveUsersExport implements FromCollection, WithHeadings, WithMapping, Sh
     */
     public function collection()
     {
-        $data = ClientTrackList::query()->select('user_id', DB::raw('COUNT(track_code) as tracks_count'))
-            ->groupBy('user_id')
-            ->with('user')
+        $data = User::query()
+            ->leftJoin('client_track_lists', 'users.id', '=', 'client_track_lists.user_id')
+            ->select('users.id as user_id', 'users.*', DB::raw('COUNT(client_track_lists.track_code) as tracks_count'))
+            ->groupBy('users.id')
             ->orderBy('tracks_count', 'desc')
             ->get()
-            ->map(function ($trackList) {
+            ->map(function ($user) {
                 return [
-                    'user_id' => $trackList->user_id,
-                    'tracks_count' => $trackList->tracks_count,
-                    'user_data' => $trackList->user,  // Модель пользователя
+                    'user_id' => $user->user_id,
+                    'tracks_count' => $user->tracks_count,
+                    'user_data' => $user,
                 ];
             });
 
@@ -53,6 +52,7 @@ class ActiveUsersExport implements FromCollection, WithHeadings, WithMapping, Sh
             $data['user_data']['name'] ?? '',
             $data['user_data']['login'] ?? '',
             $data['user_data']['city'] ?? '',
+            $data['user_data']['login_date'] ?? '',
         ];
     }
     public function columnFormats(): array
@@ -69,6 +69,7 @@ class ActiveUsersExport implements FromCollection, WithHeadings, WithMapping, Sh
             'Имя',
             'Телефон',
             'Город',
+            'Дата последнего входа',
         ];
     }
 }

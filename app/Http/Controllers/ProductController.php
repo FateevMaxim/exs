@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\ActiveUsersExport;
+use App\Exports\AllUsersExport;
 use App\Exports\UsersExport;
 use App\Imports\TracksImport;
 use App\Models\ClientTrackList;
@@ -216,9 +216,9 @@ class ProductController extends Controller
     {
         return Excel::download(new UsersExport($request['date']), 'users.xlsx');
     }
-    public function fileExportActiveUsers()
+    public function fileExportUsers()
     {
-        return Excel::download(new ActiveUsersExport(), 'active-users.xlsx');
+        return Excel::download(new AllUsersExport(), 'all-users.xlsx');
     }
     public function result ()
     {
